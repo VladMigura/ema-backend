@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+
+  postgres-db:
+    image: postgres:11.5-alpine
+    container_name: ema-postgres
+    environment:
+      - POSTGRES_USER=ema
+      - POSTGRES_PASSWORD=ema
+      - POSTGRES_DB=ema
+    ports:
+      - "5432:5432"

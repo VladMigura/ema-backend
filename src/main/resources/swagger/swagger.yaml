@@ -1,0 +1,94 @@
+---
+openapi: "3.0.0"
+
+info:
+  title: "Employee Management Application API"
+  version: 0.0.1-SNAPSHOT
+
+tags:
+  - name: Service
+  - name: Users
+
+paths:
+
+  ##################################################
+  # Service API
+  ##################################################
+
+  /api/v1/health:
+    get:
+      operationId: healthCheck
+      summary: Provide health check
+      tags:
+        - Service
+      responses:
+        "200":
+          description: OK
+
+  ##################################################
+  # Users API
+  ##################################################
+
+components:
+
+  schemas:
+
+    Error:
+      required:
+        - title
+        - code
+        - details
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 600
+          exclusiveMaximum: true
+        detail:
+          type: string
+
+  responses:
+
+    BadRequest:
+      description: Request params or body validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    Forbidden:
+      description: Wrong permission to access this resource
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    NotFound:
+      description: Resource could not be found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    ServiceUnavailable:
+      description: Remote web server is temporarily unable to handle a request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    Unauthorized:
+      description: Missing authorization information
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

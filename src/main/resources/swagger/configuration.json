@@ -1,0 +1,12 @@
+[
+  {
+    "name": "swagger.json",
+    "url": "/swagger.json",
+    "location": "/swagger.json"
+  },
+  {
+    "name": "swagger.yml",
+    "url": "/swagger.yml",
+    "location": "/swagger.yml"
+  }
+]

@@ -1,0 +1,34 @@
+---
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "${SPRING_DATASOURCE_URL:}"
+    username: "${SPRING_DATASOURCE_USERNAME:}"
+    password: "${SPRING_DATASOURCE_PASSWORD:}"
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  jackson:
+    default-property-inclusion: non_null
+server:
+  port: "${PORT:8080}"
+
+app:
+  jwt:
+    base64-secret: "${APP_JWT_BASE64_SECRET:}"
+    access-token-validity: 3600
+    refresh-token-validity: 86400
+
+---
+spring:
+  profiles: local
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/ema"
+    username: "ema"
+    password: "ema"
+  jpa:
+    show-sql: "true"
+
+app:
+  jwt:
+    base64-secret: "5Gd3F99LKe2VfDN0bMNtASeldaw9kH1854XMiTbkd57M0b99clYPcGp7KWDjjE7N8Wu2cItmAjyExEyjtVyBtA=="
