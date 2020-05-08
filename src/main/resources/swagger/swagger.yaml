@@ -6,10 +6,43 @@ info:
   version: 0.0.1-SNAPSHOT
 
 tags:
+  - name: Auth
   - name: Service
   - name: Users
 
 paths:
+
+  ##################################################
+  # Auth API
+  ##################################################
+
+  /api/v1/auth/signup:
+    post:
+      operationId: signUp
+      summary: Sing up a new user
+      security:
+        - bearerAuth: []
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   ##################################################
   # Service API
@@ -34,10 +67,6 @@ components:
   schemas:
 
     Error:
-      required:
-        - title
-        - code
-        - details
       properties:
         title:
           type: string
@@ -49,6 +78,73 @@ components:
           exclusiveMaximum: true
         detail:
           type: string
+
+    SignUpRequest:
+      required:
+        - firstName
+        - lastName
+        - email
+        - role
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        title:
+          type: string
+        role:
+          type: string
+
+    Token:
+      properties:
+        issuedAt:
+          type: integer
+          format: int64
+        accessToken:
+          type: string
+        accessExpiresIn:
+          type: integer
+          format: int64
+        refreshToken:
+          type: string
+        refreshExpiresIn:
+          type: integer
+          format: int64
+
+    User:
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        title:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+        createdAt:
+          type: string
+          format: "date-time"
+        updatedAt:
+          type: string
+          format: "date-time"
+
+    UserRole:
+      type: string
+      enum:
+        - "DEVELOPER"
+        - "MANAGER"
+        - "ADMIN"
 
   responses:
 
