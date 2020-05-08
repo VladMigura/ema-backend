@@ -43,6 +43,76 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /api/v1/auth/login:
+    post:
+      operationId: login
+      summary: Login user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/v1/auth/refresh-token:
+    post:
+      operationId: refreshToken
+      summary: Refresh token pair
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Token"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/auth/change-password:
+    put:
+      operationId: changePassword
+      summary: Change user password
+      security:
+        - bearerAuth: []
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   ##################################################
   # Service API
@@ -62,12 +132,43 @@ paths:
   # Users API
   ##################################################
 
+  /api/v1/users/current:
+    get:
+      operationId: getCurrentUser
+      summary: Get current user information
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
 components:
 
   schemas:
 
+    ChangePasswordRequest:
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+
     Error:
       properties:
+        type:
+          type: string
+          format: uri
         title:
           type: string
         status:
@@ -75,8 +176,24 @@ components:
           format: int32
           minimum: 100
           maximum: 600
-          exclusiveMaximum: true
         detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        violations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Violation"
+
+    LoginRequest:
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
           type: string
 
     SignUpRequest:
@@ -85,21 +202,33 @@ components:
         - lastName
         - email
         - role
+        - password
       properties:
         firstName:
           type: string
+          example: "John"
         lastName:
           type: string
+          example: "Dee"
         email:
           type: string
+          example: "John.Dee@gmail.com"
         phoneNumber:
           type: string
+          example: "+375298787987"
         title:
           type: string
+          example: "Senior Java Developer"
         role:
           type: string
+          example: "DEVELOPER"
+        password:
+          type: string
+          example: "Qwerty123"
 
     Token:
+      required:
+        - refreshToken
       properties:
         issuedAt:
           type: integer
@@ -146,10 +275,24 @@ components:
         - "MANAGER"
         - "ADMIN"
 
+    Violation:
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
   responses:
 
     BadRequest:
       description: Request params or body validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    Conflict:
+      description: The request could not be completed due to a conflict with the current state
       content:
         application/json:
           schema:

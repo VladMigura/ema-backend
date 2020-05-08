@@ -1,6 +1,7 @@
 package com.itechart.ema.security.impl;
 
 import com.itechart.ema.configuration.AppConfiguration;
+import com.itechart.ema.entity.UserEntity;
 import com.itechart.ema.entity.enums.UserRoleEntity;
 import com.itechart.ema.security.TokenProvider;
 import com.itechart.generated.model.RestToken;
@@ -46,6 +47,11 @@ public class TokenProviderImpl implements TokenProvider {
         this.key = Keys.hmacShaKeyFor(BASE64.decode(appConfiguration.getJwt().getBase64Secret()));
         accessTokenValidityMillis = appConfiguration.getJwt().getAccessTokenValidity() * MILLIS_IN_SECOND;
         refreshTokenValidityMillis = appConfiguration.getJwt().getRefreshTokenValidity() * MILLIS_IN_SECOND;
+    }
+
+    @Override
+    public RestToken createToken(final UserEntity userEntity) {
+        return createToken(USER_MAPPER.toUserDetails(userEntity));
     }
 
     @Override

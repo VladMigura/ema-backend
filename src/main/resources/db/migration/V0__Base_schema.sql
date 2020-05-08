@@ -19,3 +19,7 @@ CREATE TABLE ema_user
     updated_at    TIMESTAMPTZ,
     deleted_at    TIMESTAMPTZ
 );
+
+-- Password: Admin
+INSERT INTO ema_user(first_name, last_name, email, title, role, password_hash)
+VALUES ('Admin', 'Admin', 'admin@domain.com', 'Admin', 'ADMIN', '$2y$10$rgFMN2DxgTBwUBDrTuefaOtueae3Gvsn3FDsSf6BYnlpqConVY/Y.')

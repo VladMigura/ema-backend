@@ -47,7 +47,6 @@ public class ExceptionHandling implements ProblemHandling {
 
     @Override
     public ResponseEntity<Problem> process(final ResponseEntity<Problem> entity, final NativeWebRequest request) {
-
         var problem = entity.getBody();
         log.error(Arrays.toString(problem != null ? ((ThrowableProblem) problem).getStackTrace() : ArrayUtils.toArray()));
         if (!(problem instanceof ConstraintViolationProblem || problem instanceof DefaultProblem)) {
