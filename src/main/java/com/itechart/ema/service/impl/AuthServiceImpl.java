@@ -1,5 +1,6 @@
 package com.itechart.ema.service.impl;
 
+import com.itechart.ema.exception.BadRequestException;
 import com.itechart.ema.exception.ConflictException;
 import com.itechart.ema.exception.NotFoundException;
 import com.itechart.ema.exception.UnauthorizedException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.itechart.ema.mapper.UserMapper.USER_MAPPER;
+import static com.itechart.ema.util.SecurityUtil.getUserId;
 
 @Service
 @AllArgsConstructor
@@ -28,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public RestUser signUp(final RestSignUpRequest signUpRequest) {
         var email = signUpRequest.getEmail().toLowerCase();
-        var existing = userRepository.finOneByEmail(email);
+        var existing = userRepository.findOneByEmail(email);
         if (existing.isPresent()) {
             throw new ConflictException("User with such email already exists.");
         }
@@ -41,10 +43,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public RestToken login(final RestLoginRequest loginRequest) {
-        var existing = userRepository.finOneByEmail(loginRequest.getEmail().toLowerCase())
+        var existing = userRepository.findOneByEmail(loginRequest.getEmail().toLowerCase())
                 .orElseThrow(() -> new NotFoundException("User with such email not found."));
         if (!passwordEncoder.matches(loginRequest.getPassword(), existing.getPasswordHash())) {
-            throw new UnauthorizedException("Incorrect email or password.");
+            throw new BadRequestException("Incorrect email or password.");
         }
         return tokenProvider.createToken(existing);
     }
@@ -52,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public RestToken refreshToken(final RestToken token) {
         if (!tokenValidator.validateToken(token.getRefreshToken())) {
-            throw new UnauthorizedException("Invalid refresh token");
+            throw new UnauthorizedException("Invalid refresh token.");
         }
         return tokenProvider.refreshToken(token.getRefreshToken());
     }
@@ -60,7 +62,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void changePassword(final RestChangePasswordRequest changePasswordRequest) {
-
+        var userId = getUserId();
+        var user = userRepository.findOneById(userId)
+                .orElseThrow(() -> new NotFoundException("User could not be found."));
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPasswordHash())) {
+            throw new BadRequestException("Incorrect current password.");
+        }
+        user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.saveAndFlush(user);
     }
 
 }

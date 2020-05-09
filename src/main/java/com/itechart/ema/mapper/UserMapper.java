@@ -7,6 +7,7 @@ import com.itechart.generated.model.RestSignUpRequest;
 import com.itechart.generated.model.RestUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.UUID;
 
@@ -34,5 +35,13 @@ public interface UserMapper {
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
     UserEntity toUserEntity(RestSignUpRequest source);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "passwordHash", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    UserEntity updateEntity(RestUser source, @MappingTarget UserEntity target);
 
 }

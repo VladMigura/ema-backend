@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.itechart.ema.mapper.UserMapper.USER_MAPPER;
 import static com.itechart.ema.util.SecurityUtil.getUserId;
 
@@ -24,6 +27,25 @@ public class UserServiceImpl implements UserService {
         return userRepository.findOneById(userId)
                 .map(USER_MAPPER::toRestUser)
                 .orElseThrow(() -> new NotFoundException("Could not get the current user."));
+    }
+
+    @Override
+    @Transactional
+    public RestUser updateCurrentUser(final RestUser user) {
+        var userId = getUserId();
+        var existing = userRepository.findOneById(userId)
+                .orElseThrow(() -> new NotFoundException("User could not be found."));
+        var updated = USER_MAPPER.updateEntity(user, existing);
+        return USER_MAPPER.toRestUser(userRepository.saveAndFlush(updated));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestUser> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(USER_MAPPER::toRestUser)
+                .collect(Collectors.toList());
     }
 
 }

@@ -7,7 +7,11 @@ info:
 
 tags:
   - name: Auth
+  - name: Posts
+  - name: Projects
   - name: Service
+  - name: Tasks
+  - name: Teams
   - name: Users
 
 paths:
@@ -67,6 +71,8 @@ paths:
                 $ref: "#/components/schemas/Token"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /api/v1/auth/refresh-token:
     post:
@@ -113,6 +119,288 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  ##################################################
+  # Posts API
+  ##################################################
+
+  /api/v1/posts:
+    get:
+      operationId: getAllPosts
+      summary: Get list of posts
+      security:
+        - bearerAuth: []
+      tags:
+        - Posts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createPost
+      summary: Create a new post
+      security:
+        - bearerAuth: []
+      tags:
+        - Posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/posts/{postId}:
+    parameters:
+      - $ref: "#/components/parameters/PostIdPathParameter"
+    get:
+      operationId: getPostById
+      summary: Get post information by id
+      security:
+        - bearerAuth: []
+      tags:
+        - Posts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updatePost
+      summary: Update post information
+      security:
+        - bearerAuth: []
+      tags:
+        - Posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deletePost
+      summary: Delete post information
+      security:
+        - bearerAuth: []
+      tags:
+        - Posts
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  ##################################################
+  # Projects API
+  ##################################################
+
+  /api/v1/projects:
+    get:
+      operationId: getAllProjects
+      summary: Get list of projects
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createProject
+      summary: Create a new project
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/projects/{projectId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectIdPathParameter"
+    get:
+      operationId: getProjectById
+      summary: Get project information by id
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/Forbidden"
+    put:
+      operationId: updateProject
+      summary: Update project information
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteProject
+      summary: Delete project information
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/projects/{projectId}/tasks:
+    parameters:
+      - $ref: "#/components/parameters/ProjectIdPathParameter"
+    get:
+      operationId: getProjectTasks
+      summary: Get list of project tasks
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/projects/{projectId}/users:
+    parameters:
+      - $ref: "#/components/parameters/ProjectIdPathParameter"
+    get:
+      operationId: getProjectUsers
+      summary: Get list of project users
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   ##################################################
   # Service API
@@ -127,6 +415,260 @@ paths:
       responses:
         "200":
           description: OK
+
+  ##################################################
+  # Tasks API
+  ##################################################
+
+  /api/v1/tasks:
+    get:
+      operationId: getAllTasks
+      summary: Get list of tasks
+      security:
+        - bearerAuth: []
+      tags:
+        - Tasks
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createTask
+      summary: Create a new task
+      security:
+        - bearerAuth: []
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/tasks/{taskId}:
+    get:
+      operationId: getTaskById
+      summary: Get task information by id
+      security:
+        - bearerAuth: []
+      tags:
+        - Tasks
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateTask
+      summary: Update task information
+      security:
+        - bearerAuth: []
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Task"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteTask
+      summary: Delete task information
+      security:
+        - bearerAuth: []
+      tags:
+        - Tasks
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  ##################################################
+  # Teams API
+  ##################################################
+
+  /api/v1/teams:
+    get:
+      operationId: getAllTeams
+      summary: Get list of teams
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createTeam
+      summary: Create a new team
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Team"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/teams/{teamId}:
+    parameters:
+      - $ref: "#/components/parameters/TeamIdPathParameter"
+    get:
+      operationId: getTeamById
+      summary: Get team information by id
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateTeam
+      summary: Update team information
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Team"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteTeam
+      summary: Delete team information
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/teams/{teamId}/users:
+    parameters:
+      - $ref: "#/components/parameters/TeamIdPathParameter"
+    get:
+      operationId: getTeamUsers
+      summary: Get list of team users
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   ##################################################
   # Users API
@@ -149,6 +691,200 @@ paths:
                 $ref: "#/components/schemas/User"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateCurrentUser
+      summary: Update current user information
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/users:
+    get:
+      operationId: getAllUsers
+      summary: Get list of users
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    get:
+      operationId: getUserById
+      summary: Get user information by user id
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteUser
+      summary: Delete user information
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/users/{userId}/posts:
+    parameters:
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    get:
+      operationId: getUserPosts
+      summary: Get list of user posts
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/users/{userId}/projects:
+    parameters:
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    get:
+      operationId: getUserProjects
+      summary: Get list of user projects
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/users/{userId}/tasks:
+    parameters:
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    get:
+      operationId: getUserTasks
+      summary: Get list of user tasks
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/users/{userId}/teams:
+    parameters:
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    get:
+      operationId: getUserTeams
+      summary: Get list of user teams
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  ##################################################
 
 components:
 
@@ -196,6 +932,69 @@ components:
         password:
           type: string
 
+    Post:
+      required:
+        - author
+        - title
+        - description
+      properties:
+        id:
+          type: string
+          format: uuid
+        author:
+          $ref: "#/components/schemas/User"
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: "date-time"
+        updatedAt:
+          type: string
+          format: "date-time"
+
+    Project:
+      required:
+        - name
+        - customerName
+        - description
+        - manager
+        - scrumMaster
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        customerName:
+          type: string
+        status:
+          $ref: "#/components/schemas/ProjectStatus"
+        estimationInWeeks:
+          type: integer
+          format: int32
+        description:
+          type: string
+        manager:
+          $ref: "#/components/schemas/User"
+        scrumMaster:
+          $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: "date-time"
+        updatedAt:
+          type: string
+          format: "date-time"
+
+    ProjectStatus:
+      type: string
+      enum:
+        - "PENDING"
+        - "IN_PROGRESS"
+        - "SUPPORT"
+        - "COMPLETED"
+
     SignUpRequest:
       required:
         - firstName
@@ -225,6 +1024,97 @@ components:
         password:
           type: string
           example: "Qwerty123"
+
+    Task:
+      required:
+        - title
+        - description
+        - type
+        - priority
+        - project
+        - devOwner
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: "#/components/schemas/TaskType"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        project:
+          $ref: "#/components/schemas/Project"
+        devOwner:
+          $ref: "#/components/schemas/User"
+        estimationInHours:
+          type: integer
+          format: int32
+        estimationInPoints:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+        createdBy:
+          $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: "date-time"
+        updatedAt:
+          type: string
+          format: "date-time"
+
+    TaskPriority:
+      type: string
+      enum:
+        - "LOW"
+        - "MEDIUM"
+        - "HIGH"
+
+    TaskStatus:
+      type: string
+      enum:
+        - "PENDING"
+        - "IN_PROGRESS"
+        - "QA_REVIEW"
+        - "COMPLETED"
+        - "ACCEPTED"
+
+    TaskType:
+      type: string
+      enum:
+        - "BUG"
+        - "FEATURE"
+        - "INVESTIGATION"
+        - "DESIGN"
+        - "IMPLEMENTATION"
+        - "FIX"
+
+    Team:
+      required:
+        - name
+        - description
+        - manager
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        manager:
+          $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          format: "date-time"
+        updatedAt:
+          type: string
+          format: "date-time"
 
     Token:
       required:
@@ -272,6 +1162,7 @@ components:
       type: string
       enum:
         - "DEVELOPER"
+        - "SCRUM_MASTER"
         - "MANAGER"
         - "ADMIN"
 
@@ -325,6 +1216,48 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
+
+  parameters:
+
+    UserIdPathParameter:
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    TeamIdPathParameter:
+      in: path
+      name: teamId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    PostIdPathParameter:
+      in: path
+      name: postId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    ProjectIdPathParameter:
+      in: path
+      name: projectId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    TaskIdPathParameter:
+      in: path
+      name: taskId
+      required: true
+      schema:
+        type: string
+        format: uuid
 
   securitySchemes:
     bearerAuth:

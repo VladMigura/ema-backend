@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum UserRoleEntity {
 
     DEVELOPER("DEVELOPER"),
+    SCRUM_MASTER("SCRUM_MASTER"),
     MANAGER("MANAGER"),
     ADMIN("ADMIN");
 
