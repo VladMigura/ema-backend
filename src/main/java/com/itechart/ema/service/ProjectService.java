@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface ProjectService {
 
+    boolean existsById(UUID projectId);
+
     RestProject getProjectById(UUID projectId);
 
     List<RestProject> getAllProjects();

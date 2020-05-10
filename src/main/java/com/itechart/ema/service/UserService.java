@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface UserService {
 
+    boolean existsById(UUID userId);
+
     RestUser getCurrentUser();
 
     RestUser getUserById(UUID userId);

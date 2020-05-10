@@ -14,6 +14,12 @@ import java.util.UUID;
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, UUID> {
 
+    @Query(value = "SELECT(EXISTS(SELECT * FROM post " +
+            "WHERE id = :postId " +
+            "AND deleted_at IS NULL)) ",
+            nativeQuery = true)
+    boolean existsById(@Param("postId") UUID postId);
+
     @Query(value = "SELECT * FROM post " +
             "WHERE id = :postId " +
             "AND deleted_at IS NULL ",
@@ -25,6 +31,13 @@ public interface PostRepository extends JpaRepository<PostEntity, UUID> {
             "ORDER BY created_at DESC ",
             nativeQuery = true)
     List<PostEntity> findAll();
+
+    @Query(value = "SELECT * FROM post " +
+            "WHERE author_id = :userId " +
+            "AND deleted_at IS NULL " +
+            "ORDER BY created_at DESC ",
+            nativeQuery = true)
+    List<PostEntity> findAllByUserId(@Param("userId") UUID userId);
 
     @Modifying
     @Query(value = "UPDATE post " +

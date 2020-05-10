@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface PostService {
 
+    boolean existsById(UUID postId);
+
     RestPost getPostById(UUID postId);
 
     List<RestPost> getAllPosts();

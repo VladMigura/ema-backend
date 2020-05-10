@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface TaskService {
 
+    boolean existsById(UUID taskId);
+
     RestTask getTaskById(UUID taskId);
 
     List<RestTask> getAllTasks();

@@ -14,6 +14,12 @@ import java.util.UUID;
 @Repository
 public interface ProjectRepository extends JpaRepository<ProjectEntity, UUID> {
 
+    @Query(value = "SELECT(EXISTS(SELECT * FROM project " +
+            "WHERE id = :projectId " +
+            "AND deleted_at IS NULL)) ",
+            nativeQuery = true)
+    boolean existsById(@Param("projectId") UUID projectId);
+
     @Query(value = "SELECT * FROM project " +
             "WHERE id = :projectId " +
             "AND deleted_at IS NULL ",
@@ -25,6 +31,14 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, UUID> {
             "ORDER BY name ",
             nativeQuery = true)
     List<ProjectEntity> findAll();
+
+    @Query(value = "SELECT * FROM project " +
+            "LEFT JOIN project_user pu ON project.id = pu.project_id " +
+            "AND pu.user_id = :userId " +
+            "AND deleted_at IS NULL " +
+            "ORDER BY name ",
+            nativeQuery = true)
+    List<ProjectEntity> findAllByUserId(@Param("userId") UUID userId);
 
     @Modifying
     @Query(value = "UPDATE project " +

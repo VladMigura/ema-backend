@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface TeamService {
 
+    boolean existsById(UUID teamId);
+
     RestTeam getTeamById(UUID teamId);
 
     List<RestTeam> getAllTeams();

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.itechart.ema.exception.Constants.*;
 import static com.itechart.ema.mapper.UserMapper.USER_MAPPER;
 import static com.itechart.ema.util.SecurityUtil.getUserId;
 
@@ -32,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         var email = signUpRequest.getEmail().toLowerCase();
         var existing = userRepository.findOneByEmail(email);
         if (existing.isPresent()) {
-            throw new ConflictException("User with such email already exists.");
+            throw new ConflictException(USER_EMAIL_CONFLICT);
         }
         var user = USER_MAPPER.toUserEntity(signUpRequest);
         user.setEmail(email);
@@ -44,9 +45,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public RestToken login(final RestLoginRequest loginRequest) {
         var existing = userRepository.findOneByEmail(loginRequest.getEmail().toLowerCase())
-                .orElseThrow(() -> new NotFoundException("User with such email not found."));
+                .orElseThrow(() -> new NotFoundException(USER_EMAIL_NOT_FOUND));
         if (!passwordEncoder.matches(loginRequest.getPassword(), existing.getPasswordHash())) {
-            throw new BadRequestException("Incorrect email or password.");
+            throw new BadRequestException(EMAIL_OR_PASSWORD_BAD_REQUEST);
         }
         return tokenProvider.createToken(existing);
     }
@@ -54,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public RestToken refreshToken(final RestToken token) {
         if (!tokenValidator.validateToken(token.getRefreshToken())) {
-            throw new UnauthorizedException("Invalid refresh token.");
+            throw new UnauthorizedException(REFRESH_TOKEN_UNAUTHORIZED);
         }
         return tokenProvider.refreshToken(token.getRefreshToken());
     }
@@ -64,9 +65,9 @@ public class AuthServiceImpl implements AuthService {
     public void changePassword(final RestChangePasswordRequest changePasswordRequest) {
         var userId = getUserId();
         var user = userRepository.findOneById(userId)
-                .orElseThrow(() -> new NotFoundException("User could not be found."));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPasswordHash())) {
-            throw new BadRequestException("Incorrect current password.");
+            throw new BadRequestException(CURRENT_PASSWORD_BAD_REQUEST);
         }
         user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.saveAndFlush(user);

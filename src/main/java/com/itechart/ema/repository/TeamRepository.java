@@ -14,6 +14,12 @@ import java.util.UUID;
 @Repository
 public interface TeamRepository extends JpaRepository<TeamEntity, UUID> {
 
+    @Query(value = "SELECT(EXISTS(SELECT * FROM team " +
+            "WHERE id = :teamId " +
+            "AND deleted_at IS NULL)) ",
+            nativeQuery = true)
+    boolean existsById(@Param("teamId") UUID teamId);
+
     @Query(value = "SELECT * FROM team " +
             "WHERE id = :teamId " +
             "AND deleted_at IS NULL ",
@@ -21,9 +27,18 @@ public interface TeamRepository extends JpaRepository<TeamEntity, UUID> {
     Optional<TeamEntity> findOneById(@Param("teamId") UUID teamId);
 
     @Query(value = "SELECT * FROM team " +
-            "WHERE deleted_at IS NULL ",
+            "WHERE deleted_at IS NULL " +
+            "ORDER BY name ",
             nativeQuery = true)
     List<TeamEntity> findAll();
+
+    @Query(value = "SELECT * FROM team " +
+            "LEFT JOIN team_user tu ON team.id = tu.team_id " +
+            "WHERE tu.user_id = :userId " +
+            "AND deleted_at IS NULL " +
+            "ORDER BY name ",
+            nativeQuery = true)
+    List<TeamEntity> findAllByUserId(@Param("userId") UUID userId);
 
     @Modifying
     @Query(value = "UPDATE team " +
