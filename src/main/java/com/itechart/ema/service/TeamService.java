@@ -9,6 +9,8 @@ public interface TeamService {
 
     boolean existsById(UUID teamId);
 
+    void teamExistsOrException(UUID teamId);
+
     RestTeam getTeamById(UUID teamId);
 
     List<RestTeam> getAllTeams();

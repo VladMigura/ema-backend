@@ -1,10 +1,12 @@
 package com.itechart.ema.api;
 
 import com.itechart.ema.service.ProjectService;
+import com.itechart.ema.service.ProjectUserService;
 import com.itechart.ema.service.TaskService;
 import com.itechart.ema.service.UserService;
 import com.itechart.generated.api.ProjectsApi;
 import com.itechart.generated.model.RestProject;
+import com.itechart.generated.model.RestProjectUser;
 import com.itechart.generated.model.RestTask;
 import com.itechart.generated.model.RestUser;
 import lombok.AllArgsConstructor;
@@ -24,9 +26,10 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 public class ProjectsApiController implements ProjectsApi {
 
-    private final ProjectService projectService;
     private final TaskService taskService;
     private final UserService userService;
+    private final ProjectService projectService;
+    private final ProjectUserService projectUserService;
 
     @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
@@ -72,6 +75,22 @@ public class ProjectsApiController implements ProjectsApi {
                                                      @PathVariable("projectId") final UUID projectId) {
         var project = projectService.updateProject(body, projectId);
         return new ResponseEntity<>(project, OK);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    public ResponseEntity<RestProjectUser> addUserToProject(@PathVariable("projectId") final UUID projectId,
+                                                            @PathVariable("userId") final UUID userId) {
+        var projectUser = projectUserService.addUserToProject(projectId, userId);
+        return new ResponseEntity<>(projectUser, CREATED);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    public ResponseEntity<Void> removeUserFromProject(@PathVariable("projectId") final UUID projectId,
+                                                      @PathVariable("userId") final UUID userId) {
+        projectUserService.removeUserFromProject(projectId, userId);
+        return new ResponseEntity<>(NO_CONTENT);
     }
 
 }

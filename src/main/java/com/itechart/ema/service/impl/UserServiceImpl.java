@@ -2,9 +2,7 @@ package com.itechart.ema.service.impl;
 
 import com.itechart.ema.exception.NotFoundException;
 import com.itechart.ema.repository.UserRepository;
-import com.itechart.ema.service.ProjectService;
-import com.itechart.ema.service.TeamService;
-import com.itechart.ema.service.UserService;
+import com.itechart.ema.service.*;
 import com.itechart.generated.model.RestUser;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.itechart.ema.exception.Constants.*;
+import static com.itechart.ema.exception.Constants.USER_NOT_FOUND;
 import static com.itechart.ema.mapper.UserMapper.USER_MAPPER;
 import static com.itechart.ema.util.SecurityUtil.getUserId;
 
@@ -25,11 +23,21 @@ public class UserServiceImpl implements UserService {
     private final TeamService teamService;
     private final ProjectService projectService;
     private final UserRepository userRepository;
+    private final TeamUserService teamUserService;
+    private final ProjectUserService projectUserService;
 
     @Override
     @Transactional(readOnly = true)
     public boolean existsById(final UUID userId) {
         return userRepository.existsById(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void userExistsOrException(final UUID userId) {
+        if (!existsById(userId)) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
     }
 
     @Override
@@ -69,9 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<RestUser> getTeamUsers(final UUID teamId) {
-        if (!teamService.existsById(teamId)) {
-            throw new NotFoundException(TEAM_NOT_FOUND);
-        }
+        teamService.teamExistsOrException(teamId);
         return userRepository.findAllByTeamId(teamId)
                 .stream()
                 .map(USER_MAPPER::toRestUser)
@@ -81,9 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<RestUser> getProjectUsers(final UUID projectId) {
-        if (!projectService.existsById(projectId)) {
-            throw new NotFoundException(PROJECT_NOT_FOUND);
-        }
+        projectService.projectExistsOrException(projectId);
         return userRepository.findAllByProjectId(projectId)
                 .stream()
                 .map(USER_MAPPER::toRestUser)
@@ -93,10 +97,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(final UUID userId) {
-        if (!existsById(userId)) {
-            throw new NotFoundException(USER_NOT_FOUND);
-        }
+        userExistsOrException(userId);
         userRepository.softDeleteOneById(userId);
+        teamUserService.deleteAllByUserId(userId);
+        projectUserService.deleteAllByUserId(userId);
     }
 
 }

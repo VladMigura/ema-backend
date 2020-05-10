@@ -4,6 +4,7 @@ import com.itechart.ema.entity.UserEntity;
 import com.itechart.ema.exception.NotFoundException;
 import com.itechart.ema.repository.TeamRepository;
 import com.itechart.ema.service.TeamService;
+import com.itechart.ema.service.TeamUserService;
 import com.itechart.ema.service.UserService;
 import com.itechart.generated.model.RestTeam;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.itechart.ema.exception.Constants.TEAM_NOT_FOUND;
-import static com.itechart.ema.exception.Constants.USER_NOT_FOUND;
 import static com.itechart.ema.mapper.TeamMapper.TEAM_MAPPER;
 
 @Service
@@ -24,11 +24,20 @@ public class TeamServiceImpl implements TeamService {
 
     private final UserService userService;
     private final TeamRepository teamRepository;
+    private final TeamUserService teamUserService;
 
     @Override
     @Transactional(readOnly = true)
     public boolean existsById(final UUID teamId) {
         return teamRepository.existsById(teamId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void teamExistsOrException(final UUID teamId) {
+        if (!existsById(teamId)) {
+            throw new NotFoundException(TEAM_NOT_FOUND);
+        }
     }
 
     @Override
@@ -51,9 +60,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional(readOnly = true)
     public List<RestTeam> getUserTeams(final UUID userId) {
-        if (!userService.existsById(userId)) {
-            throw new NotFoundException(USER_NOT_FOUND);
-        }
+        userService.userExistsOrException(userId);
         return teamRepository.findAllByUserId(userId)
                 .stream()
                 .map(TEAM_MAPPER::toRestTeam)
@@ -82,10 +89,9 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public void deleteTeam(final UUID teamId) {
-        if (!existsById(teamId)) {
-            throw new NotFoundException(TEAM_NOT_FOUND);
-        }
+        teamExistsOrException(teamId);
         teamRepository.softDeleteOneById(teamId);
+        teamUserService.deleteAllByTeamId(teamId);
     }
 
 }

@@ -9,6 +9,8 @@ public interface TaskService {
 
     boolean existsById(UUID taskId);
 
+    void taskExistsOrException(UUID taskId);
+
     RestTask getTaskById(UUID taskId);
 
     List<RestTask> getAllTasks();

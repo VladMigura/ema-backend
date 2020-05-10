@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.itechart.ema.exception.Constants.*;
+import static com.itechart.ema.exception.Constants.TASK_NOT_FOUND;
 import static com.itechart.ema.mapper.TaskMapper.TASK_MAPPER;
 
 @Service
@@ -30,6 +30,14 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public boolean existsById(final UUID taskId) {
         return taskRepository.existsById(taskId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void taskExistsOrException(final UUID taskId) {
+        if (!existsById(taskId)) {
+            throw new NotFoundException(TASK_NOT_FOUND);
+        }
     }
 
     @Override
@@ -52,9 +60,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<RestTask> getUserTasks(final UUID userId) {
-        if (!userService.existsById(userId)) {
-            throw new NotFoundException(USER_NOT_FOUND);
-        }
+        userService.userExistsOrException(userId);
         return taskRepository.findAllByDevOwnerId(userId)
                 .stream()
                 .map(TASK_MAPPER::toRestTask)
@@ -64,9 +70,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<RestTask> getProjectTasks(final UUID projectId) {
-        if (!projectService.existsById(projectId)) {
-            throw new NotFoundException(PROJECT_NOT_FOUND);
-        }
+        projectService.projectExistsOrException(projectId);
         return taskRepository.findAllByProjectId(projectId)
                 .stream()
                 .map(TASK_MAPPER::toRestTask)
@@ -96,9 +100,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public void deleteTask(final UUID taskId) {
-        if (!existsById(taskId)) {
-            throw new NotFoundException(TASK_NOT_FOUND);
-        }
+        taskExistsOrException(taskId);
         taskRepository.softDeleteOneById(taskId);
     }
 

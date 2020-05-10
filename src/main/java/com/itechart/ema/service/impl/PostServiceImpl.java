@@ -33,6 +33,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
+    public void postExistsOrException(final UUID postId) {
+        if (!existsById(postId)) {
+            throw new NotFoundException(POST_NOT_FOUND);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public RestPost getPostById(final UUID postId) {
         return postRepository.findOneById(postId)
                 .map(POST_MAPPER::toRestPost)
@@ -81,9 +89,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void deletePost(final UUID postId) {
-        if (!existsById(postId)) {
-            throw new NotFoundException(POST_NOT_FOUND);
-        }
+        postExistsOrException(postId);
         postRepository.softDeleteOneById(postId);
     }
 

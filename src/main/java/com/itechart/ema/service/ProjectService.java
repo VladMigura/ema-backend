@@ -9,6 +9,8 @@ public interface ProjectService {
 
     boolean existsById(UUID projectId);
 
+    void projectExistsOrException(UUID projectId);
+
     RestProject getProjectById(UUID projectId);
 
     List<RestProject> getAllProjects();

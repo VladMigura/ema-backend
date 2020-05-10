@@ -9,6 +9,8 @@ public interface PostService {
 
     boolean existsById(UUID postId);
 
+    void postExistsOrException(UUID postId);
+
     RestPost getPostById(UUID postId);
 
     List<RestPost> getAllPosts();

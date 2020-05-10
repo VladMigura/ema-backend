@@ -412,6 +412,51 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/v1/projects/{projectId}/users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectIdPathParameter"
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    post:
+      operationId: addUserToProject
+      summary: Add user to the project
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: removeUserFromProject
+      summary: Remove user from the project
+      security:
+        - bearerAuth: []
+      tags:
+        - Projects
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   ##################################################
   # Service API
   ##################################################
@@ -683,6 +728,51 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/teams/{teamId}/users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/TeamIdPathParameter"
+      - $ref: "#/components/parameters/UserIdPathParameter"
+    post:
+      operationId: addUserToTeam
+      summary: Add user to the team
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: removeUserFromTeam
+      summary: Remove user from the team
+      security:
+        - bearerAuth: []
+      tags:
+        - Teams
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -1013,6 +1103,21 @@ components:
         - "SUPPORT"
         - "COMPLETED"
 
+    ProjectUser:
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        addedAt:
+          type: string
+          format: "date-time"
+
     SignUpRequest:
       required:
         - firstName
@@ -1131,6 +1236,21 @@ components:
           type: string
           format: "date-time"
         updatedAt:
+          type: string
+          format: "date-time"
+
+    TeamUser:
+      properties:
+        id:
+          type: string
+          format: uuid
+        teamId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        addedAt:
           type: string
           format: "date-time"
 

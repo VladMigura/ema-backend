@@ -9,6 +9,8 @@ public interface UserService {
 
     boolean existsById(UUID userId);
 
+    void userExistsOrException(UUID userId);
+
     RestUser getCurrentUser();
 
     RestUser getUserById(UUID userId);

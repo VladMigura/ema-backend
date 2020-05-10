@@ -4,6 +4,7 @@ import com.itechart.ema.entity.UserEntity;
 import com.itechart.ema.exception.NotFoundException;
 import com.itechart.ema.repository.ProjectRepository;
 import com.itechart.ema.service.ProjectService;
+import com.itechart.ema.service.ProjectUserService;
 import com.itechart.ema.service.UserService;
 import com.itechart.generated.model.RestProject;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.itechart.ema.exception.Constants.PROJECT_NOT_FOUND;
-import static com.itechart.ema.exception.Constants.USER_NOT_FOUND;
 import static com.itechart.ema.mapper.ProjectMapper.PROJECT_MAPPER;
 
 @Service
@@ -24,11 +24,20 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final UserService userService;
     private final ProjectRepository projectRepository;
+    private final ProjectUserService projectUserService;
 
     @Override
     @Transactional(readOnly = true)
     public boolean existsById(final UUID projectId) {
         return projectRepository.existsById(projectId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void projectExistsOrException(final UUID projectId) {
+        if (!existsById(projectId)) {
+            throw new NotFoundException(PROJECT_NOT_FOUND);
+        }
     }
 
     @Override
@@ -51,9 +60,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional(readOnly = true)
     public List<RestProject> getUserProjects(final UUID userId) {
-        if (!userService.existsById(userId)) {
-            throw new NotFoundException(USER_NOT_FOUND);
-        }
+        userService.userExistsOrException(userId);
         return projectRepository.findAllByUserId(userId)
                 .stream()
                 .map(PROJECT_MAPPER::toRestProject)
@@ -84,10 +91,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void deleteProject(final UUID projectId) {
-        if (!existsById(projectId)) {
-            throw new NotFoundException(PROJECT_NOT_FOUND);
-        }
+        projectExistsOrException(projectId);
         projectRepository.softDeleteOneById(projectId);
+        projectUserService.deleteAllByProjectId(projectId);
     }
 
 }
