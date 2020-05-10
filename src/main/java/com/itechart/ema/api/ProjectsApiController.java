@@ -1,7 +1,6 @@
 package com.itechart.ema.api;
 
 import com.itechart.ema.service.ProjectService;
-import com.itechart.ema.service.ProjectUserService;
 import com.itechart.ema.service.TaskService;
 import com.itechart.ema.service.UserService;
 import com.itechart.generated.api.ProjectsApi;
@@ -29,7 +28,6 @@ public class ProjectsApiController implements ProjectsApi {
     private final TaskService taskService;
     private final UserService userService;
     private final ProjectService projectService;
-    private final ProjectUserService projectUserService;
 
     @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
@@ -81,7 +79,7 @@ public class ProjectsApiController implements ProjectsApi {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<RestProjectUser> addUserToProject(@PathVariable("projectId") final UUID projectId,
                                                             @PathVariable("userId") final UUID userId) {
-        var projectUser = projectUserService.addUserToProject(projectId, userId);
+        var projectUser = projectService.addUserToProject(projectId, userId);
         return new ResponseEntity<>(projectUser, CREATED);
     }
 
@@ -89,7 +87,7 @@ public class ProjectsApiController implements ProjectsApi {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> removeUserFromProject(@PathVariable("projectId") final UUID projectId,
                                                       @PathVariable("userId") final UUID userId) {
-        projectUserService.removeUserFromProject(projectId, userId);
+        projectService.removeUserFromProject(projectId, userId);
         return new ResponseEntity<>(NO_CONTENT);
     }
 

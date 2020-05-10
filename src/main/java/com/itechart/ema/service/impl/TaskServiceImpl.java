@@ -1,11 +1,12 @@
 package com.itechart.ema.service.impl;
 
+import com.itechart.ema.entity.ProjectEntity;
 import com.itechart.ema.entity.UserEntity;
 import com.itechart.ema.exception.NotFoundException;
+import com.itechart.ema.repository.ProjectRepository;
 import com.itechart.ema.repository.TaskRepository;
-import com.itechart.ema.service.ProjectService;
+import com.itechart.ema.repository.UserRepository;
 import com.itechart.ema.service.TaskService;
-import com.itechart.ema.service.UserService;
 import com.itechart.generated.model.RestTask;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,30 +16,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.itechart.ema.exception.Constants.TASK_NOT_FOUND;
+import static com.itechart.ema.exception.Constants.*;
 import static com.itechart.ema.mapper.TaskMapper.TASK_MAPPER;
+import static com.itechart.ema.util.SecurityUtil.getUserId;
 
 @Service
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
-    private final UserService userService;
-    private final ProjectService projectService;
+    private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(final UUID taskId) {
-        return taskRepository.existsById(taskId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void taskExistsOrException(final UUID taskId) {
-        if (!existsById(taskId)) {
-            throw new NotFoundException(TASK_NOT_FOUND);
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -60,7 +49,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<RestTask> getUserTasks(final UUID userId) {
-        userService.userExistsOrException(userId);
+        userExistsOrException(userId);
         return taskRepository.findAllByDevOwnerId(userId)
                 .stream()
                 .map(TASK_MAPPER::toRestTask)
@@ -70,7 +59,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<RestTask> getProjectTasks(final UUID projectId) {
-        projectService.projectExistsOrException(projectId);
+        projectExistsOrException(projectId);
         return taskRepository.findAllByProjectId(projectId)
                 .stream()
                 .map(TASK_MAPPER::toRestTask)
@@ -80,9 +69,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public RestTask createTask(final RestTask task) {
+        var userId = getUserId();
         var entity = TASK_MAPPER.toTaskEntity(task);
+        entity.setProject(ProjectEntity.builder().id(task.getProject().getId()).build());
         entity.setDevOwner(UserEntity.builder().id(task.getDevOwner().getId()).build());
-        entity.setCreatedBy(UserEntity.builder().id(task.getCreatedBy().getId()).build());
+        entity.setCreatedBy(UserEntity.builder().id(userId).build());
         var saved = taskRepository.saveAndFlush(entity);
         return TASK_MAPPER.toRestTask(saved);
     }
@@ -102,6 +93,24 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTask(final UUID taskId) {
         taskExistsOrException(taskId);
         taskRepository.softDeleteOneById(taskId);
+    }
+
+    private void taskExistsOrException(final UUID taskId) {
+        if (!taskRepository.existsById(taskId)) {
+            throw new NotFoundException(TASK_NOT_FOUND);
+        }
+    }
+
+    private void userExistsOrException(final UUID userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
+    }
+
+    private void projectExistsOrException(final UUID projectId) {
+        if (!projectRepository.existsById(projectId)) {
+            throw new NotFoundException(PROJECT_NOT_FOUND);
+        }
     }
 
 }

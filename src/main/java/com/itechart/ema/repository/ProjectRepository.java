@@ -34,7 +34,7 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, UUID> {
 
     @Query(value = "SELECT * FROM project " +
             "LEFT JOIN project_user pu ON project.id = pu.project_id " +
-            "AND pu.user_id = :userId " +
+            "WHERE (pu.user_id = :userId OR manager_id = :userId OR scrum_master_id = :userId) " +
             "AND deleted_at IS NULL " +
             "ORDER BY name ",
             nativeQuery = true)

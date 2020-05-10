@@ -1,12 +1,15 @@
 package com.itechart.ema.service.impl;
 
+import com.itechart.ema.entity.TeamEntity;
+import com.itechart.ema.entity.TeamUserEntity;
 import com.itechart.ema.entity.UserEntity;
 import com.itechart.ema.exception.NotFoundException;
 import com.itechart.ema.repository.TeamRepository;
+import com.itechart.ema.repository.TeamUserRepository;
+import com.itechart.ema.repository.UserRepository;
 import com.itechart.ema.service.TeamService;
-import com.itechart.ema.service.TeamUserService;
-import com.itechart.ema.service.UserService;
 import com.itechart.generated.model.RestTeam;
+import com.itechart.generated.model.RestTeamUser;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,29 +19,17 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.itechart.ema.exception.Constants.TEAM_NOT_FOUND;
+import static com.itechart.ema.exception.Constants.USER_NOT_FOUND;
 import static com.itechart.ema.mapper.TeamMapper.TEAM_MAPPER;
+import static com.itechart.ema.mapper.TeamUserMapper.TEAM_USER_MAPPER;
 
 @Service
 @AllArgsConstructor
 public class TeamServiceImpl implements TeamService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final TeamRepository teamRepository;
-    private final TeamUserService teamUserService;
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(final UUID teamId) {
-        return teamRepository.existsById(teamId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void teamExistsOrException(final UUID teamId) {
-        if (!existsById(teamId)) {
-            throw new NotFoundException(TEAM_NOT_FOUND);
-        }
-    }
+    private final TeamUserRepository teamUserRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -60,7 +51,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional(readOnly = true)
     public List<RestTeam> getUserTeams(final UUID userId) {
-        userService.userExistsOrException(userId);
+        userExistsOrException(userId);
         return teamRepository.findAllByUserId(userId)
                 .stream()
                 .map(TEAM_MAPPER::toRestTeam)
@@ -91,7 +82,40 @@ public class TeamServiceImpl implements TeamService {
     public void deleteTeam(final UUID teamId) {
         teamExistsOrException(teamId);
         teamRepository.softDeleteOneById(teamId);
-        teamUserService.deleteAllByTeamId(teamId);
+        teamUserRepository.deleteAllByTeamId(teamId);
+    }
+
+    @Override
+    @Transactional
+    public RestTeamUser addUserToTeam(final UUID teamId, final UUID userId) {
+        teamExistsOrException(teamId);
+        userExistsOrException(userId);
+        var teamUser = TeamUserEntity.builder()
+                .team(TeamEntity.builder().id(teamId).build())
+                .user(UserEntity.builder().id(userId).build())
+                .build();
+        var saved = teamUserRepository.saveAndFlush(teamUser);
+        return TEAM_USER_MAPPER.toRestTeamUser(saved);
+    }
+
+    @Override
+    @Transactional
+    public void removeUserFromTeam(final UUID teamId, final UUID userId) {
+        teamExistsOrException(teamId);
+        userExistsOrException(userId);
+        teamUserRepository.deleteOneByTeamIdAndUserId(teamId, userId);
+    }
+
+    private void teamExistsOrException(final UUID teamId) {
+        if (!teamRepository.existsById(teamId)) {
+            throw new NotFoundException(TEAM_NOT_FOUND);
+        }
+    }
+
+    private void userExistsOrException(final UUID userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
     }
 
 }

@@ -869,6 +869,34 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateUser
+      summary: Update user information
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       operationId: deleteUser
       summary: Delete user information
@@ -1042,7 +1070,6 @@ components:
 
     Post:
       required:
-        - author
         - title
         - description
       properties:
@@ -1066,6 +1093,8 @@ components:
       required:
         - name
         - customerName
+        - status
+        - estimationInWeeks
         - description
         - manager
         - scrumMaster
@@ -1154,6 +1183,9 @@ components:
         - description
         - type
         - priority
+        - status
+        - estimationInHours
+        - estimationInPoints
         - project
         - devOwner
       properties:

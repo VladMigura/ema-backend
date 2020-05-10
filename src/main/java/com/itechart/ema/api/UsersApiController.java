@@ -40,6 +40,14 @@ public class UsersApiController implements UsersApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<RestUser> updateUser(@Valid @RequestBody final RestUser body,
+                                               @PathVariable("userId") final UUID userId) {
+        var user = userService.updateUser(body, userId);
+        return new ResponseEntity<>(user, OK);
+    }
+
+    @Override
     public ResponseEntity<List<RestUser>> getAllUsers() {
         var users = userService.getAllUsers();
         return new ResponseEntity<>(users, OK);

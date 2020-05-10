@@ -1,7 +1,6 @@
 package com.itechart.ema.api;
 
 import com.itechart.ema.service.TeamService;
-import com.itechart.ema.service.TeamUserService;
 import com.itechart.ema.service.UserService;
 import com.itechart.generated.api.TeamsApi;
 import com.itechart.generated.model.RestTeam;
@@ -26,7 +25,6 @@ public class TeamsApiController implements TeamsApi {
 
     private final TeamService teamService;
     private final UserService userService;
-    private final TeamUserService teamUserService;
 
     @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
@@ -72,7 +70,7 @@ public class TeamsApiController implements TeamsApi {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<RestTeamUser> addUserToTeam(@PathVariable("teamId") final UUID teamId,
                                                       @PathVariable("userId") final UUID userId) {
-        var teamUser = teamUserService.addUserToTeam(teamId, userId);
+        var teamUser = teamService.addUserToTeam(teamId, userId);
         return new ResponseEntity<>(teamUser, CREATED);
     }
 
@@ -80,7 +78,7 @@ public class TeamsApiController implements TeamsApi {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> removeUserFromTeam(@PathVariable("teamId") final UUID teamId,
                                                    @PathVariable("userId") final UUID userId) {
-        teamUserService.removeUserFromTeam(teamId, userId);
+        teamService.removeUserFromTeam(teamId, userId);
         return new ResponseEntity<>(NO_CONTENT);
     }
 

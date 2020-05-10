@@ -1,15 +1,12 @@
 package com.itechart.ema.service;
 
 import com.itechart.generated.model.RestProject;
+import com.itechart.generated.model.RestProjectUser;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProjectService {
-
-    boolean existsById(UUID projectId);
-
-    void projectExistsOrException(UUID projectId);
 
     RestProject getProjectById(UUID projectId);
 
@@ -22,5 +19,9 @@ public interface ProjectService {
     RestProject updateProject(RestProject project, UUID projectId);
 
     void deleteProject(UUID projectId);
+
+    RestProjectUser addUserToProject(UUID projectId, UUID userId);
+
+    void removeUserFromProject(UUID projectId, UUID userId);
 
 }

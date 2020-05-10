@@ -30,6 +30,8 @@ public interface TaskMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "project", ignore = true)
     @Mapping(target = "projectId", ignore = true)
+    @Mapping(target = "devOwner", ignore = true)
+    @Mapping(target = "devOwnerId", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdById", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

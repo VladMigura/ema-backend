@@ -34,7 +34,7 @@ public interface TeamRepository extends JpaRepository<TeamEntity, UUID> {
 
     @Query(value = "SELECT * FROM team " +
             "LEFT JOIN team_user tu ON team.id = tu.team_id " +
-            "WHERE tu.user_id = :userId " +
+            "WHERE (tu.user_id = :userId OR manager_id = :userId) " +
             "AND deleted_at IS NULL " +
             "ORDER BY name ",
             nativeQuery = true)

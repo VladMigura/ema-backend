@@ -1,5 +1,6 @@
 package com.itechart.ema.util;
 
+import com.itechart.ema.entity.enums.UserRoleEntity;
 import com.itechart.ema.security.impl.UserDetailsImpl;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,10 +16,19 @@ public class SecurityUtil {
     }
 
     public static UUID getUserId() {
-        var userDetails = (UserDetailsImpl) SecurityContextHolder.getContext()
+        var userDetails = getUserDetails();
+        return userDetails.getUserId();
+    }
+
+    public static UserRoleEntity getUserRole() {
+        var userDetails = getUserDetails();
+        return userDetails.getRole();
+    }
+
+    public static UserDetailsImpl getUserDetails() {
+        return (UserDetailsImpl) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getDetails();
-        return userDetails.getUserId();
     }
 
 }

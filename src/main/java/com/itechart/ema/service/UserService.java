@@ -7,15 +7,13 @@ import java.util.UUID;
 
 public interface UserService {
 
-    boolean existsById(UUID userId);
-
-    void userExistsOrException(UUID userId);
-
     RestUser getCurrentUser();
 
     RestUser getUserById(UUID userId);
 
     RestUser updateCurrentUser(RestUser user);
+
+    RestUser updateUser(RestUser user, UUID userId);
 
     List<RestUser> getAllUsers();
 
