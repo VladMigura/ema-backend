@@ -318,6 +318,12 @@ paths:
         - bearerAuth: []
       tags:
         - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
       responses:
         "200":
           description: OK
@@ -465,6 +471,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
 
   /api/v1/tasks/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/TaskIdPathParameter"
     get:
       operationId: getTaskById
       summary: Get task information by id

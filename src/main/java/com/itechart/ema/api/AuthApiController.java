@@ -18,10 +18,8 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @AllArgsConstructor
 public class AuthApiController implements AuthApi {
 
-    public static final String SIGN_UP_PATH = "/api/v1/auth/signup";
     public static final String LOGIN_PATH = "/api/v1/auth/login";
     public static final String REFRESH_TOKEN_PATH = "/api/v1/auth/refresh-token";
-    public static final String CHANGE_PASSWORD_PATH = "/api/v1/auth/change-password";
 
     private final AuthService authService;
 

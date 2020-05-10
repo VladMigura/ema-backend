@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.itechart.ema.mapper.UserMapper.USER_MAPPER;
@@ -24,6 +25,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public RestUser getCurrentUser() {
         var userId = getUserId();
+        return getUserById(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RestUser getUserById(final UUID userId) {
         return userRepository.findOneById(userId)
                 .map(USER_MAPPER::toRestUser)
                 .orElseThrow(() -> new NotFoundException("Could not get the current user."));
@@ -46,6 +53,24 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(USER_MAPPER::toRestUser)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestUser> getTeamUsers(final UUID teamId) {
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestUser> getProjectUsers(final UUID projectId) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(final UUID userId) {
+
     }
 
 }
