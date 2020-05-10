@@ -9,7 +9,8 @@ import org.mapstruct.MappingTarget;
 import static org.mapstruct.factory.Mappers.getMapper;
 
 @Mapper(uses = {
-        CommonMapper.class
+        CommonMapper.class,
+        UserMapper.class,
 })
 public interface PostMapper {
 

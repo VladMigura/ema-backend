@@ -10,6 +10,7 @@ import static org.mapstruct.factory.Mappers.getMapper;
 
 @Mapper(uses = {
         CommonMapper.class,
+        UserMapper.class,
 })
 public interface ProjectMapper {
 
