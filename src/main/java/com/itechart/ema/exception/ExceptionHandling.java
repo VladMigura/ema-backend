@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-@ControllerAdvice
 @Slf4j
+@ControllerAdvice
 public class ExceptionHandling implements ProblemHandling {
 
     private static final Map<String, Function<ServerErrorMessage, Violation>> PSQL_ERRORS

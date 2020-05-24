@@ -8,4 +8,5 @@ public class ConflictException extends AbstractThrowableProblem {
     public ConflictException(final String message) {
         super(ErrorType.CONFLICT, "Conflict", Status.CONFLICT, message);
     }
+
 }

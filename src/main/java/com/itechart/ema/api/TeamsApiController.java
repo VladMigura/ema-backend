@@ -27,14 +27,14 @@ public class TeamsApiController implements TeamsApi {
     private final UserService userService;
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'SCRUM_MASTER')")
     public ResponseEntity<RestTeam> createTeam(@Valid @RequestBody final RestTeam body) {
         var team = teamService.createTeam(body);
         return new ResponseEntity<>(team, CREATED);
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGEER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGEER', 'SCRUM_MASTER')")
     public ResponseEntity<Void> deleteTeam(@PathVariable("teamId") final UUID teamId) {
         teamService.deleteTeam(teamId);
         return new ResponseEntity<>(NO_CONTENT);
@@ -59,7 +59,7 @@ public class TeamsApiController implements TeamsApi {
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'SCRUM_MASTER')")
     public ResponseEntity<RestTeam> updateTeam(@Valid @RequestBody final RestTeam body,
                                                @PathVariable("teamId") final UUID teamId) {
         var team = teamService.updateTeam(body, teamId);
@@ -67,7 +67,7 @@ public class TeamsApiController implements TeamsApi {
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'SCRUM_MASTER')")
     public ResponseEntity<RestTeamUser> addUserToTeam(@PathVariable("teamId") final UUID teamId,
                                                       @PathVariable("userId") final UUID userId) {
         var teamUser = teamService.addUserToTeam(teamId, userId);
@@ -75,7 +75,7 @@ public class TeamsApiController implements TeamsApi {
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'SCRUM_MASTER')")
     public ResponseEntity<Void> removeUserFromTeam(@PathVariable("teamId") final UUID teamId,
                                                    @PathVariable("userId") final UUID userId) {
         teamService.removeUserFromTeam(teamId, userId);

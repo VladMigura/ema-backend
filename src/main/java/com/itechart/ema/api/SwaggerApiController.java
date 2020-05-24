@@ -108,7 +108,7 @@ public class SwaggerApiController {
             swaggerYaml.put("info", new HashMap<String, Object>());
         }
         var info = (Map<String, Object>) swaggerYaml.get("info");
-        var description = "**App version**: `" + VersionUtil.appVersion()
+        var description = "**App version**: `" + "0.0.1-SNAPSHOT"
                 + "`\n\n**Spring Boot version**: `" + VersionUtil.springBootVersion()
                 + "`\n\n**Java version**: `" + VersionUtil.javaVersion()
                 + "`\n\n**Java vendor**: `" + VersionUtil.javaVendor() + "`";
